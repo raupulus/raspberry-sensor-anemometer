@@ -19,6 +19,8 @@ class AnemometerServer():
     def __init__(self, pin=7,):
         self.PIN = pin
 
+        self.connect()
+
     def connect(self):
         """
         Inicializa la conexión con el sensor.
