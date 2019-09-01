@@ -2,6 +2,10 @@
 
 Control de anemómetro con la raspberry pi 4 utilizando GND+GPIO para contar los pulsos y sacar la velocidad del viento a partir de ello.
 
+Basado en el script de **Patrick Rudolph** dándole un enfoque más moderno con
+ python3, modular, adaptable a varios tipos de anemómetros por configuración y
+  con un estilo de programación orientado a objetos.
+
 ## Esquema de conexión
 
 | Module | PCB Desc | GPIO | Pin |
