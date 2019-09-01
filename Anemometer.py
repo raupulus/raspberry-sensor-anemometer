@@ -9,6 +9,8 @@ class Anemometer():
 
     PIN = 7
 
+    events = []
+
     imp_per_sec = 0
 
     ## Velocidad actual de la velocidad del viento en metros por segundos.
@@ -33,7 +35,7 @@ class Anemometer():
         """
         pass
 
-    def addImp(self):
+    def addImp(self, val):
         """
         Aumenta imp por segundo.
         """
