@@ -4,9 +4,6 @@ import RPi.GPIO as GPIO
 import math
 
 class Anemometer():
-    # RPi.GPIO Layout verwenden (wie Pin-Nummern)
-    GPIO.setmode(GPIO.BOARD)
-
     PIN = 7
 
     events = []
@@ -15,6 +12,21 @@ class Anemometer():
 
     ## Velocidad actual de la velocidad del viento en metros por segundos.
     wind_speed = 0
+
+    ## Velocidad máxima.
+    wind_max = 0
+
+    ## Velocidad mínima.
+    wind_min = 0
+
+    ## Velocidad media.
+    wind_average = 0
+
+    ## Valores anteriores registrados
+    old_wind_max = 0
+    old_wind_min = 0
+    old_wind_average = 0
+
 
     def __init__(self, pin=7,):
         self.PIN = pin
@@ -25,6 +37,7 @@ class Anemometer():
         """
         Inicializa la conexión con el sensor.
         """
+        GPIO.setmode(GPIO.BOARD)
         GPIO.setup(self.PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
         GPIO.add_event_detect(self.PIN, GPIO.RISING, callback=self.addImp,
                               bouncetime=5)

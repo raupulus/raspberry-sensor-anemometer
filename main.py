@@ -16,7 +16,6 @@ PORT = 2400
 
 
 def threadeval ():
-    print('Entra')
     while 1:
         anemometer.wind_speed = anemometer.imp_to_meters_second()
         print("Velocidad actual: %f m/s" % anemometer.wind_speed)
@@ -33,7 +32,7 @@ if __name__ == "__main__":
     start_new_thread(threadeval, ())
 
     ## Instancia el servidor
-    server = Server((HOST, PORT), tcp_connection_handler, anemometer)
+    server = Server((HOST, PORT), tcp_connection_handler)
 
     ## Terminar con Ctrl-C
     try:
