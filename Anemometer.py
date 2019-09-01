@@ -1,11 +1,9 @@
 #!/usr/bin/python3
 
-from thread import start_new_thread
 import RPi.GPIO as GPIO
 import math
-import time
 
-class AnemometerServer():
+class Anemometer():
     # RPi.GPIO Layout verwenden (wie Pin-Nummern)
     GPIO.setmode(GPIO.BOARD)
 
@@ -26,7 +24,7 @@ class AnemometerServer():
         Inicializa la conexión con el sensor.
         """
         GPIO.setup(self.PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-        GPIO.add_event_detect(self.PIN, GPIO.RISING, callback=interrupt,
+        GPIO.add_event_detect(self.PIN, GPIO.RISING, callback=self.addImp,
                               bouncetime=5)
 
     def disconnect(self):
@@ -59,16 +57,4 @@ class AnemometerServer():
 
         return calc
 
-    def threadeval(self):
 
-        while 1:
-            self.wind_speed = self.imp_to_meters_second()
-            print("Velocidad actual: %f m/s" % self.wind_speed)
-
-            self.imp_per_sec = 0
-
-            for x in self.events:
-                x.set()
-            time.sleep(1)
-
-    start_new_thread(threadeval, ())
