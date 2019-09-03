@@ -25,7 +25,38 @@ El resultado será devuelto en metros por segundos (m/s).
 Se añade un servidor para tomar el valor desde otros dispositivos fácilmente y/o
 poder depurar resultados.
 
-## Formulas y Cálculos
+## Calcular velocidad del viento
+
+Cada giro completo del anemómetro cerrará dos veces el circuito por lo que
+detectará dos pulsos. Esto nos servirá para los siguientes cálculos.
+
+El número de rotaciones completa será el total de pulsos dividido entre dos, de
+forma que para calcular la velocidad del viento tendremos:
+
+velocidad = distancia / tiempo
+
+velocidad = (rotaciones * circunferencia) / tiempo
+
+En el caso de la circunferencia la calcularemos conociendo el radio del 
+anemómetro:
+
+velocidad = ( (pulsos/2) * (2 * pi * radio) ) / tiempo
+
+Los anemómetros de tres palas son originales de oracle, estos tenían 9cm de 
+diámetro pero puede variar según marca y modelo.
+
+Aproximadamente y como referencia en muchas hojas de productos he leído que
+para calibrar un anemómetro se puede equivaler 1 rotación por segundo (2 pulsos)
+a 2,4km/h de forma que tomando datos de 5 segundos y girando 5 vueltas 
+completas debería darnos esa aproximación. Claro que esto debe leerse de la 
+especificación para tu anemómetro por si fuera distinto.
+
+Tal vez lo obtenido no se corresponda a la realidad, hay una pérdida de energía
+eólica al girar las palas y esto normalmente se compensa multiplicando la
+velocidad final en km/h por 1,18 (aumentar un 18% el resultado obtenido).
+
+
+## Otras Formulas y Cálculos
 
 ### Pasar velocidad del viento en m/s a km/h
 
