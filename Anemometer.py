@@ -187,6 +187,28 @@ class Anemometer():
         ## Devuelvo los datos.
         return data
 
+    def start_read(self):
+        """
+        Comienza la lectura de datos cada un periodo de tiempo para hacer los
+        cálculos de los eventos en GPIO recibidos durante ese tiempo.
+        Este hilo queda abierto para que al consultar al modelo haya permanecido
+        constantemente almacenando datos y sea inmediata su devolución sin
+        necesitar realizar los cálculos en ese momento.
+        """
+        pass
+
+    def stop_read(self):
+        """
+        Para la lectura de datos y cierra el hilo de trabajo con el anemómetro.
+        """
+        pass
+
+    def tablemodel(self):
+        """
+        Plantea campos como modelo de datos para una base de datos y poder ser
+        tomados desde el exterior.
+        """
+        pass
 
 anemometer = Anemometer()
 
