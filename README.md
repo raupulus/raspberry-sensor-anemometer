@@ -28,7 +28,8 @@ poder depurar resultados.
 ## Calcular velocidad del viento
 
 Cada giro completo del anemómetro cerrará dos veces el circuito por lo que
-detectará dos pulsos. Esto nos servirá para los siguientes cálculos.
+detectará dos pulsos (Puede ser mayor). Esto nos servirá para los siguientes c
+álculos.
 
 El número de rotaciones completa será el total de pulsos dividido entre dos, de
 forma que para calcular la velocidad del viento tendremos:
