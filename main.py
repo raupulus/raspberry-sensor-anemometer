@@ -1,41 +1,32 @@
 #!/usr/bin/python3
 
 import sys
-from _thread import start_new_thread
 import time
 
 from Anemometer import Anemometer
-from TCPConnectionHandler import TCPConnectionHandler
-from Server import Server
-
-anemometer = Anemometer()
-tcp_connection_handler = TCPConnectionHandler
-
-HOST = ''
-PORT = 2400
-
-
-def threadeval ():
-    while 1:
-        anemometer.wind_speed = anemometer.imp_to_meters_second()
-        print("Velocidad actual: %f m/s" % anemometer.wind_speed)
-
-        anemometer.imp_per_sec = 0
-
-        for x in anemometer.events:
-            x.set()
-        time.sleep(1)
-
 
 if __name__ == "__main__":
-    ## Crea el hilo
-    start_new_thread(threadeval, ())
+    anemometer = Anemometer()
 
-    ## Instancia el servidor
-    server = Server((HOST, PORT), tcp_connection_handler)
+    ## Inicio lecturas de datos
+    anemometer.start_read()
 
-    ## Terminar con Ctrl-C
-    try:
-        server.serve_forever()
-    except KeyboardInterrupt:
-        sys.exit(0)
+    ## Espera de 3 segundos recopilando los primeros datos
+    time.sleep(3)
+
+    count = 0
+
+    ## Muestro constantemente los datos recopilados para probar, calibrar o debug
+    while True:
+        try:
+            ## Cuando ha tomado 5 lecturas devuelve y resetea contadores
+            ## para indicar que comienza una nueva medición.
+            count += 1
+            print('Contador:', count)
+            if (count % 5) == 0:
+                print(anemometer.get_all_datas())
+            else:
+                anemometer.debug()
+        except KeyboardInterrupt:
+            anemometer.stop_read()
+            sys.exit(0)
