@@ -2,9 +2,10 @@
 
 Control de anemómetro con la raspberry pi 4 utilizando GND+GPIO para contar los pulsos y sacar la velocidad del viento a partir de ello.
 
-Basado en el script de **Patrick Rudolph** dándole un enfoque más moderno con
- python3, modular, adaptable a varios tipos de anemómetros por configuración y
-  con un estilo de programación orientado a objetos.
+Basado en un principio sobre el script de **Patrick Rudolph** dándole un enfoque
+personalizado más moderno con python3, modular, adaptable a varios tipos de
+anemómetros por configuración y con un estilo de programación orientado a
+objetos que trata el sensor bajo una clase/modelo.
 
 ## Esquema de conexión
 
@@ -20,10 +21,42 @@ enviados durante un periodo de tiempo sacamos la velocidad.
 
 El resultado será devuelto en metros por segundos (m/s).
 
-## Servidor
+Para el anemómetro será necesario colocarle un condensador y así evitar 
+rebotes/picos generados por el contacto y el imán del anemómetro. Esto genera
+falsas lecturas.
 
-Se añade un servidor para tomar el valor desde otros dispositivos fácilmente y/o
-poder depurar resultados.
+## Funcionamiento del modelo
+
+El modelo "Anemometer" está construido intentando facilitar el uso de distintos
+tipos de anemómetros y sobre diferentes pines simplemente pasando esta 
+configuración al constructor de la clase:
+
+```python
+from Anemometer import Anemometer
+anemometer = Anemometer(pin=23, RADIO=6)
+``` 
+
+Automáticamente, mediante un proceso/hilo en segundo plano, se escucha un evento
+en el pin GPIO con el que se inicializa la clase detectando los pulsos de
+entrada indicando las vueltas completas (normalmente 2 pulsos por vuelta).
+
+Además se crea otro hilo/proceso con la función **start_read()** para cada un
+periodo de tiempo actualizar los valores y que al pedir datos desde la 
+aplicación donde usemos este modelo, sea mucho más rápida la lectura.
+
+La función **generate_wind()** es la encargada de realizar los cálculos
+y resetear variables de control. Además rellena variables auxiliares para 
+mantener los valores anteriores inmediatos a los actuales.
+
+Desde la función **get_all_data()** obtenemos la lectura actual con sus 
+estadísticas calculadas anterioremente.
+
+Para insertar en base de datos planteo la función **tablemodel()** con los 
+campos necesarios de forma que al tener varios sensores pueda quedar
+dinamizado. 
+
+Para comprobar las mediciones existe la función **debug()** que pintará por 
+consola los datos recopilados en ese momento.
 
 ## Calcular velocidad del viento
 
