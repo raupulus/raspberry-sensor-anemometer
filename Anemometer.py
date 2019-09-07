@@ -66,6 +66,9 @@ class Anemometer():
     s_time = time.time()
     time_diff = 0  ## Diferencia de tiempo entre comprobaciones
 
+    ## Parámetros para devolver datos del modelo de base de datos
+    table_name = 'table_anemometer'
+
     def __init__(self, pin=7, RADIO = 9, pulsos_vuelta=2):
         self.PIN = pin
         self.RADIO = RADIO
@@ -166,7 +169,7 @@ class Anemometer():
         """
 
         ## Almaceno todos los datos a devolver.
-        data =  {
+        data = {
             'wind_speed': self.wind_speed,
             'wind_average': self.wind_average,
             'wind_min': self.wind_min,
@@ -174,15 +177,16 @@ class Anemometer():
         }
 
         ## Limpio los datos del modelo.
-        pulsos = 0
-        pulsos_totales = 0
-        wind_speed = 0
-        wind_speed_total = 0
-        wind_max = 0
-        wind_min = 0
-        wind_average = 0
-        s_time = time.time()
-        time_diff = 0
+        self.pulsos = 0
+        self.pulsos_totales = 0
+        self.wind_speed = 0
+        self.wind_speed_total = 0
+        self.wind_max = 0
+        self.wind_min = 0
+        self.wind_average = 0
+        self.s_time = time.time()
+        self.time_diff = 0
+        self.wind_recount = 0
 
         ## Devuelvo los datos.
         return data
@@ -208,19 +212,76 @@ class Anemometer():
         Plantea campos como modelo de datos para una base de datos y poder ser
         tomados desde el exterior.
         """
-        pass
+
+        return {
+            'name': self.table_name,
+            'columns': {
+                'id': {
+                    'type': 'Integer',
+                    'params': {
+                        'primary_key': True,
+                        'autoincrement': True,
+                    }
+                },
+                'wind_speed': {
+                    'type': 'Numeric',
+                    'params': {
+                        'precision': 15,
+                        'asdecimal': True,
+                        'scale': 4
+                    }
+                },
+                'wind_average': {
+                    'type': 'Numeric',
+                    'params': {
+                        'precision': 15,
+                        'asdecimal': True,
+                        'scale': 4
+                    }
+                },
+                'wind_min': {
+                    'type': 'Numeric',
+                    'params': {
+                        'precision': 15,
+                        'asdecimal': True,
+                        'scale': 4
+                    }
+                },
+                'wind_max': {
+                    'type': 'Numeric',
+                    'params': {
+                        'precision': 15,
+                        'asdecimal': True,
+                        'scale': 4
+                    }
+                },
+                'created_at': {
+                    'type': 'DateTime',
+                    'params': {
+                        'default': 'datetime.datetime.utcnow'
+                    }
+                }
+            },
+        }
+
+    def debug(self):
+        """
+        Función para depurar funcionamiento del modelo proyectando datos por
+        consola.
+        """
+        print('Pulsos Totales:', self.pulsos_totales)
+        print('Pulsos en esta medición:', self.old_pulsos)
+        print('Tiempo recopilando pulsos:', self.old_time_diff)
+        print('Metros por segundos:', self.wind_speed)
+        print('Media de todas las capturas:', self.wind_average)
+        print('Viento mínimo:', self.wind_min)
+        print('Viento máximo:', self.wind_max)
+        time.sleep(5)
+
 
 anemometer = Anemometer()
 
 while True:
     ## Genero estadíasticas
     anemometer.generate_wind()
-
-    print('Pulsos Totales:', anemometer.pulsos_totales)
-    print('Pulsos en esta medición:', anemometer.old_pulsos)
-    print('Tiempo recopilando pulsos:', anemometer.old_time_diff)
-    print('Metros por segundos:', anemometer.wind_speed)
-    print('Media de todas las capturas:', anemometer.wind_average)
-    print('Viento mínimo:', anemometer.wind_min)
-    print('Viento máximo:', anemometer.wind_max)
-    time.sleep(5)
+    anemometer.debug()
