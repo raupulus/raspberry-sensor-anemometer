@@ -4,7 +4,7 @@ import time
 import RPi.GPIO as GPIO
 import math
 import time
-
+from _thread import start_new_thread
 
 class Anemometer():
     """
@@ -69,10 +69,15 @@ class Anemometer():
     ## Parámetros para devolver datos del modelo de base de datos
     table_name = 'table_anemometer'
 
-    def __init__(self, pin=7, RADIO = 9, pulsos_vuelta=2):
+    ## Tiempo en seg. que tarda entre mediciones para recalcular estadísticas
+    s_mediciones = 5
+
+    def __init__(self, pin=7, RADIO = 9, pulsos_vuelta=2, s_mediciones=5):
         self.PIN = pin
         self.RADIO = RADIO
         self.pulsos_por_vuelta = pulsos_vuelta
+        self.s_mediciones = s_mediciones
+        self.killed = False
         self.connect()
 
     def connect(self):
@@ -103,6 +108,17 @@ class Anemometer():
         velocidad = distancia / tiempo
         velocidad = (vueltas * circunferencia) / tiempo
         velocidad = ((pulsos / pulsos por vuelta) * (2 * pi * radio)) / tiempo
+
+        Anteriormente se usaba:
+            val = self.imp_per_sec
+            # y = 8E-09x5 - 2E-06x4 + 0,0002x3 - 0,0073x2 + 0,4503x + 0,11
+
+            calc = float("8e-9") * math.pow(val, 5) - float("2e-6") * \
+                math.pow(val, 4) + float("2e-4") * math.pow(val, 3) - float("7.3e-3") * \
+                math.pow(val, 2) + 0.4503 * val + 0.11
+
+            if calc < 0.2:
+                calc = 0
 
         :return: m/s
         """
@@ -199,13 +215,29 @@ class Anemometer():
         constantemente almacenando datos y sea inmediata su devolución sin
         necesitar realizar los cálculos en ese momento.
         """
-        pass
+
+        def read_and_sleep():
+            """
+            Esta función actualiza las estadísticas de las lecturas cada
+            cierto tiempo en bucle.
+            """
+            while True:
+                ## Si se ha marcado para detener lecturas, se aborta hilo.
+                if self.killed:
+                    raise SystemExit
+                self.generate_wind()
+                time.sleep(self.s_mediciones)
+
+        self.killed = False
+        start_new_thread(read_and_sleep, ())
 
     def stop_read(self):
         """
         Para la lectura de datos y cierra el hilo de trabajo con el anemómetro.
         """
-        pass
+        print('Cerrando hilo de lectura de datos')
+        self.killed = True
+
 
     def tablemodel(self):
         """
@@ -277,11 +309,3 @@ class Anemometer():
         print('Viento mínimo:', self.wind_min)
         print('Viento máximo:', self.wind_max)
         time.sleep(5)
-
-
-anemometer = Anemometer()
-
-while True:
-    ## Genero estadíasticas
-    anemometer.generate_wind()
-    anemometer.debug()
